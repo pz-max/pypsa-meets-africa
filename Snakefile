@@ -318,6 +318,17 @@ def terminate_if_cutout_exists(config=config):
     Check if any of the requested cutout files exist.
     If that's the case, terminate execution to avoid data loss.
     """
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--mode", type=int, default=snakemake.Mode.default)
+    parser.add_argument("--target-jobs", type=str, nargs="+", default=[])
+    args, _ = parser.parse_known_args(sys.argv)
+    if args.mode == snakemake.Mode.subprocess and "build_cutout" not in " ".join(
+        args.target_jobs
+    ):
+        return
+
     config_cutouts = [
         d_value["cutout"] for tc, d_value in config["renewable"].items()
     ] + list(config["atlite"]["cutouts"].keys())
