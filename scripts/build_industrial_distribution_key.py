@@ -30,19 +30,10 @@ def map_industry_to_buses(df, countries, gadm_level, shapes_path, gadm_clusterin
     Only cement not steel - proof of concept.
     Change hotmaps to more descriptive name, etc.
     """
-    df = df[df.country.isin(countries)]
-    df["gadm_{}".format(gadm_level)] = df[["x", "y", "country"]].apply(
-        lambda site: locate_bus(
-            site[["x", "y"]].astype("float"),
-            site["country"],
-            gadm_level,
-            shapes_path,
-            gadm_clustering,
-        ),
-        axis=1,
+    df = locate_bus(df, countries, gadm_level, shapes_path, gadm_clustering).set_index(
+        "gadm_" + str(gadm_level)
     )
-
-    return df.set_index("gadm_" + str(gadm_level))
+    return df
 
 
 def build_nodal_distribution_key(
@@ -122,7 +113,6 @@ if __name__ == "__main__":
 
         snakemake = mock_snakemake(
             "build_industrial_distribution_key",
-            simpl="",
             clusters="4",
             planning_horizons=2050,
             demand="AB",

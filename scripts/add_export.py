@@ -39,25 +39,14 @@ def select_ports(n):
         keep_default_na=False,
     ).squeeze()
 
-    # ports = raw_ports[["name", "country", "fraction", "x", "y"]]
-    # ports.loc[:, "fraction"] = ports.fraction.round(1)
-
-    ports = ports[ports.country.isin(countries)]
-    if len(ports) < 1:
-        logger.error(
-            "No export ports chosen, please add ports to the file data/export_ports.csv"
-        )
     gadm_level = snakemake.params.gadm_level
 
-    ports["gadm_{}".format(gadm_level)] = ports[["x", "y", "country"]].apply(
-        lambda port: locate_bus(
-            port[["x", "y"]],
-            port["country"],
-            gadm_level,
-            snakemake.input["shapes_path"],
-            snakemake.params.alternative_clustering,
-        ),
-        axis=1,
+    ports = locate_bus(
+        ports,
+        countries,
+        gadm_level,
+        snakemake.input.shapes_path,
+        snakemake.params.alternative_clustering,
     )
 
     # TODO: revise if ports quantity and property by shape become relevant
@@ -219,6 +208,7 @@ if __name__ == "__main__":
             discountrate="0.071",
             demand="AB",
             h2export="120",
+            # configfile="test/config.test1.yaml",
         )
 
     overrides = override_component_attrs(snakemake.input.overrides)

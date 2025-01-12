@@ -134,6 +134,7 @@ from _helpers import (
     configure_logging,
     create_logger,
     get_aggregation_strategies,
+    locate_bus,
     update_p_nom_max,
 )
 from add_electricity import load_costs
@@ -379,23 +380,13 @@ def distribute_clusters(
 
 
 def busmap_for_gadm_clusters(inputs, n, gadm_level, geo_crs, country_list):
-    gdf = gpd.read_file(inputs.gadm_shapes)
 
-    def locate_bus(coords, co):
-        gdf_co = gdf[gdf["GADM_ID"].str.contains(co)]
-        point = Point(coords["x"], coords["y"])
-
-        try:
-            return gdf_co[gdf_co.contains(point)]["GADM_ID"].item()
-
-        except ValueError:
-            return gdf_co[
-                gdf_co.geometry == min(gdf_co.geometry, key=(point.distance))
-            ]["GADM_ID"].item()
-
-    buses = n.buses
-    buses["gadm_{}".format(gadm_level)] = buses[["x", "y", "country"]].apply(
-        lambda bus: locate_bus(bus[["x", "y"]], bus["country"]), axis=1
+    buses = locate_bus(
+        n.buses,
+        country_list,
+        gadm_level,
+        inputs.gadm_shapes,
+        gadm_clustering=True,
     )
 
     buses["gadm_subnetwork"] = (

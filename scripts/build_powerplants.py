@@ -111,6 +111,7 @@ import yaml
 from _helpers import (
     configure_logging,
     create_logger,
+    locate_bus,
     read_csv_nafix,
     to_csv_nafix,
     two_digits_2_name_country,
@@ -374,28 +375,13 @@ if __name__ == "__main__":
         country_list = snakemake.params.countries
         geo_crs = snakemake.params.geo_crs
 
-        gdf = gpd.read_file(snakemake.input.gadm_shapes)
-
-        def locate_bus(coords, co):
-            gdf_co = gdf[gdf["GADM_ID"].str.contains(co)]
-
-            point = Point(coords["lon"], coords["lat"])
-
-            try:
-                return gdf_co[gdf_co.contains(point)][
-                    "GADM_ID"
-                ].item()  # filter gdf_co which contains point and returns the bus
-
-            except ValueError:
-                return gdf_co[
-                    gdf_co.geometry == min(gdf_co.geometry, key=(point.distance))
-                ][
-                    "GADM_ID"
-                ].item()  # looks for closest one shape=node
-                # fixing https://github.com/pypsa-meets-earth/pypsa-earth/pull/670
-
-        ppl["region_id"] = ppl[["lon", "lat", "Country"]].apply(
-            lambda pp: locate_bus(pp[["lon", "lat"]], pp["Country"]), axis=1
-        )
+        ppl = locate_bus(
+            ppl.rename(columns={"lon": "x", "lat": "y", "Country": "country"}),
+            country_list,
+            gadm_layer_id,
+            snakemake.input.gadm_shapes,
+            snakemake.params.alternative_clustering,
+            col_out="region_id",
+        ).rename(columns={"x": "lon", "y": "lat", "country": "Country"})
 
     ppl.to_csv(snakemake.output.powerplants)
