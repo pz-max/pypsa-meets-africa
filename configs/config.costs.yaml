@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version: 0.4.1
+
+# TODO: Needs to be adjusted for Africa.
+costs:
+  year: 2030
+  version: v0.6.2
+  discountrate: [0.071] #, 0.086, 0.111]
+  # [EUR/USD] ECB: https://www.ecb.europa.eu/stats/exchange/eurofxref/html/eurofxref-graph-usd.en.html # noqa: E501
+  USD2013_to_EUR2013: 0.7532 # [EUR/USD] ECB: https://www.ecb.europa.eu/stats/exchange/eurofxref/html/eurofxref-graph-usd.en.html
+  rooftop_share: 0.14 # based on the potentials, assuming  (0.1 kW/m2 and 10 m2/person)
+  fill_values:
+    FOM: 0
+    VOM: 0
+    efficiency: 1
+    fuel: 0
+    investment: 0
+    lifetime: 25
+    CO2 intensity: 0
+    discount rate: 0.07
+  marginal_cost: # EUR/MWh
+    solar: 0.01
+    onwind: 0.015
+    offwind: 0.015
+    hydro: 0.
+    H2: 0.
+    electrolysis: 0.
+    fuel cell: 0.
+    battery: 0.
+    battery inverter: 0.
+  emission_prices: # in currency per tonne emission, only used with the option Ep
+    co2: 0.
+  # investment: # EUR/MW
+  #   CCGT: 830000
+  # FOM: # %/year
+  #   CCGT: 3.35
+  # VOM: # EUR/MWh
+  #   CCGT: 4.2
+  # fuel: # EUR/MWh
+  #   gas: 10.1
+  # lifetime: # years
+  #   CCGT: 25.0
+  # efficiency: # per unit
+  #   CCGT: 0.58
+  lines:
+    length_factor: 1.25 #to estimate offwind connection costs

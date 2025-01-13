@@ -16,6 +16,7 @@ from _helpers import (
     get_last_commit_message,
     check_config_version,
     copy_default_files,
+    write_config,
 )
 from build_demand_profiles import get_load_paths_gegis
 from retrieve_databundle_light import datafiles_retrivedatabundle
@@ -27,13 +28,22 @@ HTTP = HTTPRemoteProvider()
 copy_default_files()
 
 
-configfile: "config.default.yaml"
+# configfile: "config.default.yaml"
 configfile: "configs/bundle_config.yaml"
 configfile: "configs/powerplantmatching_config.yaml"
+configfile: "configs/config.main.yaml"
+configfile: "configs/config.spatial.yaml"
+configfile: "configs/config.weather.yaml"
+configfile: "configs/config.elec.yaml"
+configfile: "configs/config.sector.yaml"
+configfile: "configs/config.costs.yaml"
+configfile: "configs/config.solve.yaml"
+configfile: "configs/config.plot.yaml"
 configfile: "config.yaml"
 
 
-check_config_version(config=config)
+write_config(config)
+# check_config_version(config=config)
 
 config.update({"git_commit": get_last_commit_message(".")})
 
@@ -1644,6 +1654,16 @@ if config["foresight"] == "overnight":
             )
         script:
             "scripts/solve_network.py"
+
+
+rule make_conf_check:
+    output:
+        pretty_config="results/" + RDIR + "config_scenarios.html",
+    threads: 1
+    resources:
+        mem_mb=10000,
+    script:
+        "scripts/make_conf_check.py"
 
 
 rule make_sector_summary:

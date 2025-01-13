@@ -1,0 +1,154 @@
+# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version: 0.4.1
+
+load_options:
+  weather_year: 2013 # Load scenarios available with different weather year (different renewable potentials)
+
+
+atlite:
+  nprocesses: 4
+  cutouts:
+    cutout-2013-era5:
+      module: era5
+      dx: 0.3 # cutout resolution
+      dy: 0.3 # cutout resolution
+      # The cutout time is automatically set by the snapshot range. See `snapshot:` option above and 'build_cutout.py'.
+      # time: ["2013-01-01", "2014-01-01"]  # to manually specify a different weather year (~70 years available)
+      # The cutout spatial extent [x,y] is automatically set by country selection. See `countires:` option above and 'build_cutout.py'.
+      # x: [-12., 35.]  # set cutout range manual, instead of automatic by boundaries of country
+      # y: [33., 72]    # manual set cutout range
+
+renewable:
+  onwind:
+    cutout: cutout-2013-era5
+    resource:
+      method: wind
+      turbine: Vestas_V112_3MW
+    capacity_per_sqkm: 3 # conservative, ScholzPhd Tab 4.3.1: 10MW/km^2
+    # correction_factor: 0.93
+    copernicus:
+      # Scholz, Y. (2012). Renewable energy based electricity supply at low costs:
+      #  development of the REMix model and application for Europe. ( p.42 / p.28)
+      # CLC grid codes:
+      # 11X/12X - Various forest types
+      # 20  - Shrubs
+      # 30  - Herbaceus vegetation
+      # 40  - Cropland
+      # 50  - Urban
+      # 60  - Bare / Sparse vegetation
+      # 80  - Permanent water bodies
+      # 100 - Moss and lichen
+      # 200 - Open sea
+      grid_codes: [20, 30, 40, 60, 100, 111, 112, 113, 114, 115, 116, 121, 122, 123, 124, 125, 126]
+      distance: 1000
+      distance_grid_codes: [50]
+    natura: true
+    potential: simple # or conservative
+    clip_p_max_pu: 1.e-2
+    extendable: true
+  offwind-ac:
+    cutout: cutout-2013-era5
+    resource:
+      method: wind
+      turbine: NREL_ReferenceTurbine_5MW_offshore
+    capacity_per_sqkm: 2
+    # correction_factor: 0.8855
+    # proxy for wake losses
+    # from 10.1016/j.energy.2018.08.153
+    # until done more rigorously in #153
+    copernicus:
+      grid_codes: [80, 200]
+    natura: true
+    max_depth: 50
+    max_shore_distance: 30000
+    potential: simple # or conservative
+    clip_p_max_pu: 1.e-2
+    extendable: true
+  offwind-dc:
+    cutout: cutout-2013-era5
+    resource:
+      method: wind
+      turbine: NREL_ReferenceTurbine_5MW_offshore
+    # ScholzPhd Tab 4.3.1: 10MW/km^2
+    capacity_per_sqkm: 3
+    # correction_factor: 0.8855
+    # proxy for wake losses
+    # from 10.1016/j.energy.2018.08.153
+    # until done more rigorously in #153
+    copernicus:
+      grid_codes: [80, 200]
+    natura: true
+    max_depth: 50
+    min_shore_distance: 30000
+    potential: simple # or conservative
+    clip_p_max_pu: 1.e-2
+    extendable: true
+  solar:
+    cutout: cutout-2013-era5
+    resource:
+      method: pv
+      panel: CSi
+      orientation: latitude_optimal # will lead into optimal design
+      # slope: 0.  # slope: 0 represent a flat panel
+      # azimuth: 180.  # azimuth: 180 south orientation
+    capacity_per_sqkm: 4.6 # From 1.7 to 4.6 addresses issue #361
+    # Determined by comparing uncorrected area-weighted full-load hours to those
+    # published in Supplementary Data to
+    # Pietzcker, Robert Carl, et al. "Using the sun to decarbonize the power
+    # sector: The economic potential of photovoltaics and concentrating solar
+    # power." Applied Energy 135 (2014): 704-720.
+    correction_factor: 0.854337
+    copernicus:
+      grid_codes: [20, 30, 40, 50, 60, 90, 100]
+    natura: true
+    potential: simple # or conservative
+    clip_p_max_pu: 1.e-2
+    extendable: true
+  hydro:
+    cutout: cutout-2013-era5
+    hydrobasins_level: 6
+    resource:
+      method: hydro
+      hydrobasins: data/hydrobasins/hybas_world.shp
+      flowspeed: 1.0 # m/s
+      # weight_with_height: false
+      # show_progress: true
+    carriers: [ror, PHS, hydro]
+    PHS_max_hours: 6
+    hydro_max_hours: "energy_capacity_totals_by_country" # not active
+    hydro_max_hours_default: 6.0 # (optional, default 6) Default value of max_hours for hydro when NaN values are found
+    clip_min_inflow: 1.0
+    extendable: true
+    normalization:
+      method: hydro_capacities # 'hydro_capacities' to rescale country hydro production by using hydro_capacities, 'eia' to rescale by eia data, false for no rescaling
+      year: 2013 # (optional) year of statistics used to rescale the runoff time series. When not provided, the cutout weather year is used
+    multiplier: 1.1 # multiplier applied after the normalization of the hydro production; default 1.0
+  csp:
+    cutout: cutout-2013-era5
+    resource:
+      method: csp
+      installation: SAM_solar_tower
+    capacity_per_sqkm: 2.392 # From 1.7 to 4.6 addresses issue #361
+    # Determined by comparing uncorrected area-weighted full-load hours to those
+    # published in Supplementary Data to
+    # Pietzcker, Robert Carl, et al. "Using the sun to decarbonize the power
+    # sector: The economic potential of photovoltaics and concentrating solar
+    # power." Applied Energy 135 (2014): 704-720.
+    copernicus:
+      grid_codes: [20, 30, 40, 60, 90]
+      distancing_codes: [50]
+      distance_to_codes: 3000
+    natura: true
+    potential: simple # or conservative
+    clip_p_max_pu: 1.e-2
+    extendable: true
+    csp_model: advanced # simple or advanced
+
+solar_thermal:
+  clearsky_model: simple
+  orientation:
+    slope: 45.
+    azimuth: 180.

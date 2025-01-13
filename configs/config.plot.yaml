@@ -1,0 +1,230 @@
+# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version: 0.4.1
+
+plotting:
+  map:
+    figsize: [7, 7]
+    boundaries: [-10.2, 29, 35, 72]
+    p_nom:
+      bus_size_factor: 5.e+4
+      linewidth_factor: 3.e+3
+    color_geomap:
+      ocean: white
+      land: whitesmoke
+
+  costs_max: 10
+  costs_threshold: 0.2
+
+  energy_max: 20000
+  energy_min: -20000
+  energy_threshold: 15
+
+  vre_techs:
+  - onwind
+  - offwind-ac
+  - offwind-dc
+  - solar
+  - ror
+  conv_techs:
+  - OCGT
+  - CCGT
+  - nuclear
+  - Nuclear
+  - coal
+  - oil
+  storage_techs:
+  - hydro+PHS
+  - battery
+  - H2
+  renewable_storage_techs:
+  - PHS
+  - hydro
+  load_carriers:
+  - AC load
+  AC_carriers:
+  - AC line
+  - AC transformer
+  link_carriers:
+  - DC line
+  - Converter AC-DC
+  heat_links:
+  - heat pump
+  - resistive heater
+  - CHP heat
+  - CHP electric
+  - gas boiler
+  - central heat pump
+  - central resistive heater
+  - central CHP heat
+  - central CHP electric
+  - central gas boiler
+  heat_generators:
+  - gas boiler
+  - central gas boiler
+  - solar thermal collector
+  - central solar thermal collector
+
+  tech_colors:
+    onwind: #235ebc
+    onshore wind: #235ebc
+    offwind: #6895dd
+    offwind-ac: #6895dd
+    offshore wind: #6895dd
+    offshore wind ac: #6895dd
+    offshore wind (AC): #6895dd
+    offwind-dc: #74c6f2
+    offshore wind dc: #74c6f2
+    offshore wind (DC): #74c6f2
+    wave: #004444
+    hydro: #08ad97
+    hydro+PHS: #08ad97
+    PHS: #08ad97
+    hydro reservoir: #08ad97
+    hydroelectricity: #08ad97
+    ror: #4adbc8
+    run of river: #4adbc8
+    solar: #f9d002
+    solar PV: #f9d002
+    solar thermal: #ffef60
+    solar rooftop: #ffef60
+    biomass: #0c6013
+    solid biomass: #06540d
+    solid biomass for industry co2 from atmosphere: #654321
+    solid biomass for industry co2 to stored: #654321
+    solid biomass for industry CC: #654321
+    biogas: #23932d
+    waste: #68896b
+    geothermal: #ba91b1
+    OCGT: #d35050
+    OCGT marginal: sandybrown
+    OCGT-heat: #ee8340
+    gas: #d35050
+    natural gas: #d35050
+    gas boiler: #ee8340
+    gas boilers: #ee8340
+    gas boiler marginal: #ee8340
+    gas-to-power/heat: brown
+    SMR: #4F4F2F
+    SMR CC: darkblue
+    oil: #262626
+    oil boiler: #B5A642
+    oil emissions: #666666
+    gas for industry: #333333
+    gas for industry CC: brown
+    gas for industry co2 to atmosphere: #654321
+    gas for industry co2 to stored: #654321
+    nuclear: #ff9000
+    Nuclear: r
+    Nuclear marginal: r
+    uranium: r
+    coal: #707070
+    Coal: k
+    Coal marginal: k
+    lignite: #9e5a01
+    Lignite: grey
+    Lignite marginal: grey
+    H2: #ea048a
+    H2 for industry: #222222
+    H2 for shipping: #6495ED
+    H2 liquefaction: m
+    hydrogen storage: #ea048a
+    battery: slategray
+    battery discharger: slategray
+    battery charger: slategray
+    battery storage: slategray
+    home battery: #614700
+    home battery storage: #614700
+    lines: #70af1d
+    transmission lines: #70af1d
+    AC: #70af1d
+    AC-AC: #70af1d
+    AC line: #70af1d
+    links: #8a1caf
+    HVDC links: #8a1caf
+    DC: #8a1caf
+    DC-DC: #8a1caf
+    DC link: #8a1caf
+    load: #ff0000
+    load shedding: #ff0000
+    Electric load: b
+    electricity: k
+    electric demand: k
+    electricity distribution grid: y
+    heat: darkred
+    Heat load: r
+    heat pumps: #76EE00
+    heat pump: #76EE00
+    air heat pump: #76EE00
+    ground heat pump: #40AA00
+    CHP: r
+    CHP heat: r
+    CHP electric: r
+    heat demand: darkred
+    rural heat: #880000
+    central heat: #b22222
+    decentral heat: #800000
+    low-temperature heat for industry: #991111
+    process heat: #FF3333
+    power-to-heat: red
+    resistive heater: pink
+    Sabatier: #FF1493
+    methanation: #FF1493
+    power-to-gas: purple
+    power-to-liquid: darkgreen
+    helmeth: #7D0552
+    DAC: deeppink
+    co2 stored: #123456
+    CO2 pipeline: gray
+    CO2 sequestration: #123456
+    co2: #123456
+    co2 vent: #654321
+    process emissions: #222222
+    process emissions CC: gray
+    process emissions to stored: #444444
+    process emissions to atmosphere: #888888
+    agriculture heat: #D07A7A
+    agriculture machinery oil: #1e1e1e
+    agriculture machinery oil emissions: #111111
+    agriculture electricity: #222222
+    Fischer-Tropsch: #44DD33
+    kerosene for aviation: #44BB11
+    naphtha for industry: #44FF55
+    land transport oil: #44DD33
+    land transport oil emissions: #666666
+    land transport fuel cell: #AAAAAA
+    land transport EV: grey
+    V2G: grey
+    BEV charger: grey
+    shipping: #6495ED
+    shipping oil: #6495ED
+    shipping oil emissions: #6495ED
+    water tanks: #BBBBBB
+    hot water storage: #BBBBBB
+    hot water charging: #BBBBBB
+    hot water discharging: #999999
+    Li ion: grey
+    district heating: #CC4E5C
+    retrofitting: purple
+    building retrofitting: purple
+    solid biomass transport: green
+    biomass EOP: green
+    high-temp electrolysis: magenta
+    today: #D2691E
+    Ambient: k
+
+  nice_names:
+    OCGT: Open-Cycle Gas
+    CCGT: Combined-Cycle Gas
+    offwind-ac: Offshore Wind (AC)
+    offwind-dc: Offshore Wind (DC)
+    onwind: Onshore Wind
+    solar: Solar
+    PHS: Pumped Hydro Storage
+    hydro: Reservoir & Dam
+    battery: Battery Storage
+    H2: Hydrogen Storage
+    lines: Transmission Lines
+    ror: Run of River

@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version: 0.4.1
+
+# definition of the Coordinate Reference Systems
+crs:
+  geo_crs: EPSG:4326 # general geographic projection, not used for metric measures. "EPSG:4326" is the standard used by OSM and google maps
+  distance_crs: EPSG:3857 # projection for distance measurements only. Possible recommended values are "EPSG:3857" (used by OSM and Google Maps)
+  area_crs: ESRI:54009 # projection for area measurements only. Possible recommended values are Global Mollweide "ESRI:54009"
+
+cluster_options:
+  simplify_network:
+    to_substations: false # network is simplified to nodes with positive or negative power injection (i.e. substations or offwind connections)
+    algorithm: kmeans # choose from: [hac, kmeans]
+    feature: solar+onwind-time # only for hac. choose from: [solar+onwind-time, solar+onwind-cap, solar-time, solar-cap, solar+offwind-cap] etc.
+    exclude_carriers: []
+    remove_stubs: true
+    remove_stubs_across_borders: true
+    p_threshold_drop_isolated: 20 # [MW] isolated buses are being discarded if bus mean power is below the specified threshold
+    p_threshold_merge_isolated: 300 # [MW] isolated buses are being merged into a single isolated bus if a bus mean power is below the specified threshold
+    s_threshold_fetch_isolated: 0.05 # [-] a share of the national load for merging an isolated network into a backbone network
+  cluster_network:
+    algorithm: kmeans
+    feature: solar+onwind-time
+    exclude_carriers: []
+  alternative_clustering: false # "False" use Voronoi shapes, "True" use GADM shapes
+  distribute_cluster: ["load"] # Distributes cluster nodes per country according to ['load'],['pop'] or ['gdp']
+  out_logging: true # When "True", logging is printed to console
+  aggregation_strategies:
+    generators: # use "min" for more conservative assumptions
+      p_nom: sum
+      p_nom_max: sum
+      p_nom_min: sum
+      p_min_pu: mean
+      marginal_cost: mean
+      committable: any
+      ramp_limit_up: max
+      ramp_limit_down: max
+      efficiency: mean
+
+build_shape_options:
+  gadm_layer_id: 1 # GADM level area used for the gadm_shapes. Codes are country-dependent but roughly: 0: country, 1: region/county-like, 2: municipality-like
+  simplify_gadm: true # When true, shape polygons are simplified else no
+  update_file: false # When true, all the input files are downloaded again and replace the existing files
+  out_logging: true # When true, logging is printed to console
+  year: 2020 # reference year used to derive shapes, info on population and info on GDP
+  nprocesses: 3 # number of processes to be used in build_shapes
+  worldpop_method: "standard" # "standard" pulls from web 1kmx1km raster, "api" pulls from API 100mx100m raster,
+  # false (not "false") no pop addition to shape which is useful when generating only cutout
+  gdp_method: "standard" # "standard" pulls from web 1x1km raster, false (not "false") no gdp addition to shape which useful when generating only cutout
+  contended_flag: "set_by_country" # "set_by_country" assigns the contended areas to the countries according to the GADM database, "drop" drops these contended areas from the model

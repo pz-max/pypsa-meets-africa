@@ -40,6 +40,13 @@ BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 
 # absolute path to config.default.yaml
 CONFIG_DEFAULT_PATH = os.path.join(BASE_DIR, "config.default.yaml")
+CONFIGS_STORE_PATH = os.path.join(BASE_DIR, "config.default.yaml")
+
+
+def write_config(config):
+    # TODO Add licensing information
+    with open("config_test.yaml", "w") as outfile:
+        yaml.dump(config, outfile, default_flow_style=False)
 
 
 def check_config_version(config, fp_config=CONFIG_DEFAULT_PATH):

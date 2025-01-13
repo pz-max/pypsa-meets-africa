@@ -1,0 +1,77 @@
+# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version: 0.6.0
+tutorial: false
+
+logging:
+  level: INFO
+  format: "%(levelname)s:%(name)s:%(message)s"
+
+results_dir: results/
+summary_dir: results/
+costs_dir: data/ # TODO change to the equivalent of technology data
+
+foresight: overnight
+
+# Can be replaced by country ["NG", "BJ"], continent ["Africa"] or user-specific region, see more at https://pypsa-earth.readthedocs.io/en/latest/configuration.html#top-level-configuration
+countries: ["KZ"]
+
+enable:
+  retrieve_databundle: true #  Recommended 'true', for the first run. Otherwise data might be missing.
+  retrieve_databundle_sector: true
+  retrieve_cost_data: true # true: retrieves cost data from technology data and saves in resources/costs.csv, false: uses cost data in data/costs.csv
+  download_osm_data: true # If 'true', OpenStreetMap data will be downloaded for the above given countries
+  build_natura_raster: false # If True, then an exclusion raster will be build
+  build_cutout: false
+  # If "build_cutout" : true, then environmental data is extracted according to `snapshots` date range and `countries`
+  # requires cds API key https://cds.climate.copernicus.eu/api-how-to
+  # More information https://atlite.readthedocs.io/en/latest/introduction.html#datasets
+  progress_bar: true # show progress bar during downloading routines and other long-running tasks
+
+custom_rules: [] # Default empty [] or link to custom rule file e.g. ["my_folder/my_rules.smk"] that add rules to Snakefile
+
+run:
+  name: "" # use this to keep track of runs with different settings
+  sector_name: "" # use this to keep track of sector scenario runs
+  shared_cutouts: true # set to true to share the default cutout(s) across runs
+  # Note: value false requires build_cutout to be enabled
+  allow_scenario_failure: false # If True, the workflow will continue even if a scenario in run_scnenario fails
+
+scenario:
+  simpl: [""]
+  ll: ["copt"]
+  clusters: [10]
+  opts: [Co2L-3H]
+  planning_horizons: # investment years for myopic and perfect; or costs year for overnight
+  - 2030
+  sopts:
+  - "144H"
+  demand:
+  - "AB"
+
+snapshots:
+  start: "2013-01-01"
+  end: "2013-01-07"
+  inclusive: "left" # end is not inclusive
+
+augmented_line_connection:
+  add_to_snakefile: false # If True, includes this rule to the workflow
+  connectivity_upgrade: 2 # Min. lines connection per node,
+  # https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.connectivity.edge_augmentation.k_edge_augmentation.html#networkx.algorithms.connectivity.edge_augmentation.k_edge_augmentation
+  new_line_type: ["HVAC"] # Expanded lines can be either ["HVAC"] or ["HVDC"] or both ["HVAC", "HVDC"]
+  min_expansion: 1 # [MW] New created line expands by float/int input
+  min_DC_length: 600 # [km] Minimum line length of DC line
+
+load_options:
+  ssp: "ssp2-2.6" # shared socio-economic pathway (GDP and population growth) scenario to consider
+  prediction_year: 2030 # Load scenarios available with different prediction year (GDP, population)
+  scale: 1 # scales all load time-series, i.e. 2 = doubles load
+
+# originates from sector part
+demand_data:
+  update_data: true # if true, the workflow downloads the energy balances data saved in data/demand/unsd/data again. Turn on for the first run.
+  base_year: 2019
+  other_industries: false # Whether or not to include industries that are not specified. some countries have has exaggerated numbers, check carefully.
+  aluminium_year: 2019 # Year of the aluminium demand data specified in `data/AL_production.csv`

@@ -1,0 +1,99 @@
+# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version: 0.4.1
+
+clean_osm_data_options: # osm = OpenStreetMap
+  names_by_shapes: true # Set the country name based on the extended country shapes
+  threshold_voltage: 51000 # [V] minimum voltage threshold to keep the asset (cable, line, generator, etc.) [V]
+  tag_substation: "transmission" # Filters only substations with 'transmission' tag, ('distribution' also available)
+  add_line_endings: true # When "True", then line endings are added to the dataset of the substations
+  generator_name_method: OSM # Methodology to specify the name to the generator. Options: OSM (name as by OSM dataset), closest_city (name by the closest city)
+  use_custom_lines: "OSM_only" # Use OSM (OSM_only), customized (custom_only), or both data sets (add_custom)
+  path_custom_lines: false # If exists, provide the specific absolute path of the custom file e.g. (...\data\custom_lines.geojson)
+  use_custom_substations: "OSM_only" # Use OSM (OSM_only), customized (custom_only), or both data sets (add_custom)
+  path_custom_substations: false # If exists, provide the specific absolute path of the custom file e.g. (...\data\custom_substations.geojson)
+  use_custom_cables: "OSM_only" # Use OSM (OSM_only), customized (custom_only), or both data sets (add_custom)
+  path_custom_cables: false # If exists, provide the specific absolute path of the custom file e.g. (...\data\custom_cables.geojson)
+
+# download_osm_data_nprocesses: 10  # (optional) number of threads used to download osm data
+
+build_osm_network: # Options of the build_osm_network script; osm = OpenStreetMap
+  group_close_buses: true # When "True", close buses are merged and guarantee the voltage matching among line endings
+  group_tolerance_buses: 5000 # [m] (default 5000) Tolerance in meters of the close buses to merge
+  split_overpassing_lines: true # When True, lines overpassing buses are splitted and connected to the bueses
+  overpassing_lines_tolerance: 1 # [m] (default 1) Tolerance to identify lines overpassing buses
+  force_ac: false # When true, it forces all components (lines and substation) to be AC-only. To be used if DC assets create problem.
+
+base_network:
+  min_voltage_substation_offshore: 51000 # [V] minimum voltage of the offshore substations
+  min_voltage_rebase_voltage: 51000 # [V] minimum voltage in base network
+
+electricity:
+  base_voltage: 380.
+  voltages: [132., 220., 300., 380., 500., 750.]
+  co2limit: 7.75e+7 # European default, 0.05 * 3.1e9*0.5, needs to be adjusted for Africa
+  co2base: 1.487e+9 # European default, adjustment to Africa necessary
+  agg_p_nom_limits: data/agg_p_nom_minmax.csv
+  hvdc_as_lines: false # should HVDC lines be modeled as `Line` or as `Link` component?
+  automatic_emission: false
+  automatic_emission_base_year: 1990 # 1990 is taken as default. Any year from 1970 to 2018 can be selected.
+
+  operational_reserve: # like https://genxproject.github.io/GenX/dev/core/#Reserves
+    activate: false
+    epsilon_load: 0.02 # share of total load
+    epsilon_vres: 0.02 # share of total renewable supply
+    contingency: 0 # fixed capacity in MW
+
+  max_hours:
+    battery: 6
+    H2: 168
+
+  extendable_carriers:
+    Generator: [solar, onwind, offwind-ac, offwind-dc, OCGT]
+    StorageUnit: [] # battery, H2
+    Store: [battery, H2]
+    Link: [] # H2 pipeline
+
+  powerplants_filter: (DateOut >= 2022 or DateOut != DateOut)
+  custom_powerplants: false #  "false" use only powerplantmatching (ppm) data, "merge" combines ppm and custom powerplants, "replace" use only custom powerplants
+
+  conventional_carriers: [nuclear, oil, OCGT, CCGT, coal, lignite, geothermal, biomass]
+  renewable_carriers: [solar, onwind, offwind-ac, offwind-dc, hydro]
+
+  estimate_renewable_capacities:
+    stats: "irena" # False, = greenfield expansion, 'irena' uses IRENA stats to add expansion limits
+    year: 2023 # Reference year, available years for IRENA stats are 2000 to 2023
+    p_nom_min: 1 # any float, scales the minimum expansion acquired from stats, i.e. 110% of <years>'s capacities => p_nom_min: 1.1
+    p_nom_max: false # sets the expansion constraint, False to deactivate this option and use estimated renewable potentials determine by the workflow, float scales the p_nom_min factor accordingly
+    technology_mapping:
+      # Wind is the Fueltype in ppm.data.Capacity_stats, onwind, offwind-{ac,dc} the carrier in PyPSA-Earth
+      Offshore: [offwind-ac, offwind-dc]
+      Onshore: [onwind]
+      PV: [solar]
+
+lines:
+  ac_types:
+    132.: "243-AL1/39-ST1A 20.0"
+    220.: "Al/St 240/40 2-bundle 220.0"
+    300.: "Al/St 240/40 3-bundle 300.0"
+    380.: "Al/St 240/40 4-bundle 380.0"
+    500.: "Al/St 240/40 4-bundle 380.0"
+    750.: "Al/St 560/50 4-bundle 750.0"
+  dc_types:
+    500.: "HVDC XLPE 1000"
+  s_max_pu: 0.7
+  s_nom_max: .inf
+  length_factor: 1.25
+  under_construction: "zero" # 'zero': set capacity to zero, 'remove': remove, 'keep': with full capacity
+
+links:
+  p_max_pu: 1.0
+  p_nom_max: .inf
+  under_construction: "zero" # 'zero': set capacity to zero, 'remove': remove, 'keep': with full capacity
+
+transformers:
+  x: 0.1
+  s_nom: 2000.
+  type: ""

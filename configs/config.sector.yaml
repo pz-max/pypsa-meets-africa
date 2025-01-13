@@ -1,0 +1,249 @@
+# SPDX-FileCopyrightText:  PyPSA-Earth and PyPSA-Eur Authors
+#
+# SPDX-License-Identifier: CC0-1.0
+
+version: 0.4.1
+
+policy_config:
+  hydrogen:
+    temporal_matching: "no_res_matching" # either "h2_yearly_matching", "h2_monthly_matching", "no_res_matching"
+    spatial_matching: false
+    additionality: false # RE electricity is equal to the amount required for additional hydrogen export compared to the 0 export case ("reference_case")
+    allowed_excess: 1.0
+    is_reference: false # Whether or not this network is a reference case network, relevant only if additionality is _true_
+    remove_h2_load: false #Whether or not to remove the h2 load from the network, relevant only if is_reference is _true_
+    path_to_ref: "" # Path to the reference case network for additionality calculation, relevant only if additionality is _true_ and is_reference is _false_
+    re_country_load: false # Set to "True" to force the RE electricity to be equal to the electricity required for hydrogen export and the country electricity load. "False" excludes the country electricity load from the constraint.
+
+# originates from sector part
+demand_data:
+  update_data: true # if true, the workflow downloads the energy balances data saved in data/demand/unsd/data again. Turn on for the first run.
+  base_year: 2019
+  other_industries: false # Whether or not to include industries that are not specified. some countries have has exaggerated numbers, check carefully.
+  aluminium_year: 2019 # Year of the aluminium demand data specified in `data/AL_production.csv`
+
+fossil_reserves:
+  oil: 100 #TWh Maybe redundant
+
+sector:
+  gas:
+    spatial_gas: true # ALWAYS TRUE
+    network: false # ALWAYS FALSE for now (NOT USED)
+    network_data: GGIT # Global dataset -> 'GGIT' , European dataset -> 'IGGIELGN'
+    network_data_GGIT_status: ["Construction", "Operating", "Idle", "Shelved", "Mothballed", "Proposed"]
+
+  # parameters of the heating sector
+  # the share of space heating from all heating. Remainder goes to water heating.
+  space_heat_share: 0.6
+  district_heating:
+    potential: 0.3 #maximum fraction of urban demand which can be supplied by district heating
+    #increase of today's district heating demand to potential maximum district heating share
+    #progress = 0 means today's district heating share, progress=-1 means maximum fraction of urban demand is supplied by district heating
+    progress: 1
+    # 2020: 0.0
+    # 2030: 0.3
+    # 2040: 0.6
+    # 2050: 1.0
+    district_heating_loss: 0.15
+  reduce_space_heat_exogenously: true # reduces space heat demand by a given factor (applied before losses in DH)
+  # this can represent e.g. building renovation, building demolition, or if
+  # the factor is negative: increasing floor area, increased thermal comfort, population growth
+  reduce_space_heat_exogenously_factor: 0.29 # per unit reduction in space heat demand
+  # the default factors are determined by the LTS scenario from http://tool.european-calculator.eu/app/buildings/building-types-area/?levers=1ddd4444421213bdbbbddd44444ffffff11f411111221111211l212221
+  # 2020: 0.10  # this results in a space heat demand reduction of 10%
+  # 2025: 0.09  # first heat demand increases compared to 2020 because of larger floor area per capita
+  # 2030: 0.09
+  # 2035: 0.11
+  # 2040: 0.16
+  # 2045: 0.21
+  # 2050: 0.29
+
+  tes: true
+  tes_tau: # 180 day time constant for centralised, 3 day for decentralised
+    decentral: 3
+    central: 180
+  boilers: true
+  oil_boilers: false
+  chp: true
+  micro_chp: false
+  solar_thermal: true
+  heat_pump_sink_T: 55 #Celsius, based on DTU / large area radiators; used un build_cop_profiles.py
+  time_dep_hp_cop: true #time dependent heat pump coefficient of performance
+  solar_cf_correction: 0.788457 # = >>>1/1.2683
+
+
+  # parameters of the mobility sector
+  bev_plug_to_wheel_efficiency: 0.2 #kWh/km from EPA https://www.fueleconomy.gov/feg/ for Tesla Model S
+  bev_charge_efficiency: 0.9 #BEV (dis-)charging efficiency
+  transport_heating_deadband_upper: 20.
+  transport_heating_deadband_lower: 15.
+  ICE_lower_degree_factor: 0.375 #in per cent increase in fuel consumption per degree above deadband
+  ICE_upper_degree_factor: 1.6
+  EV_lower_degree_factor: 0.98
+  EV_upper_degree_factor: 0.63
+  bev_avail_max: 0.95
+  bev_avail_mean: 0.8
+  bev_dsm_restriction_value: 0.75 #Set to 0 for no restriction on BEV DSM
+  bev_dsm_restriction_time: 7 #Time at which SOC of BEV has to be dsm_restriction_value
+  v2g: true #allows feed-in to grid from EV battery
+  bev_dsm: true #turns on EV battery
+  bev_energy: 0.05 #average battery size in MWh
+  bev_availability: 0.5 #How many cars do smart charging
+  transport_fuel_cell_efficiency: 0.5
+  transport_internal_combustion_efficiency: 0.3
+  industry_util_factor: 0.7
+
+  biomass_transport: true # biomass transport between nodes
+  biomass_transport_default_cost: 0.1 #EUR/km/MWh
+  solid_biomass_potential: 40 # TWh/a, Potential of whole modelled area
+  biogas_potential: 0.5 # TWh/a, Potential of whole modelled area
+
+  efficiency_heat_oil_to_elec: 0.9
+  efficiency_heat_biomass_to_elec: 0.9
+  efficiency_heat_gas_to_elec: 0.9
+
+  dynamic_transport:
+    enable: false # If "True", then the BEV and FCEV shares are obtained depending on the "Co2L"-wildcard (e.g. "Co2L0.70: 0.10"). If "False", then the shares are obtained depending on the "demand" wildcard and "planning_horizons" wildcard as listed below (e.g. "DF_2050: 0.08")
+    land_transport_electric_share:
+      Co2L2.0: 0.00
+      Co2L1.0: 0.01
+      Co2L0.90: 0.03
+      Co2L0.80: 0.06
+      Co2L0.70: 0.10
+      Co2L0.60: 0.17
+      Co2L0.50: 0.27
+      Co2L0.40: 0.40
+      Co2L0.30: 0.55
+      Co2L0.20: 0.69
+      Co2L0.10: 0.80
+      Co2L0.00: 0.88
+    land_transport_fuel_cell_share:
+      Co2L2.0: 0.01
+      Co2L1.0: 0.01
+      Co2L0.90: 0.01
+      Co2L0.80: 0.01
+      Co2L0.70: 0.01
+      Co2L0.60: 0.01
+      Co2L0.50: 0.01
+      Co2L0.40: 0.01
+      Co2L0.30: 0.01
+      Co2L0.20: 0.01
+      Co2L0.10: 0.01
+      Co2L0.00: 0.01
+
+  land_transport_fuel_cell_share: # 1 means all FCEVs HERE
+    BU_2030: 0.00
+    AP_2030: 0.004
+    NZ_2030: 0.02
+    DF_2030: 0.01
+    AB_2030: 0.01
+    BU_2050: 0.00
+    AP_2050: 0.06
+    NZ_2050: 0.28
+    DF_2050: 0.08
+
+  land_transport_electric_share: # 1 means all EVs  # This leads to problems when non-zero HERE
+    BU_2030: 0.00
+    AP_2030: 0.075
+    NZ_2030: 0.13
+    DF_2030: 0.01
+    AB_2030: 0.01
+    BU_2050: 0.00
+    AP_2050: 0.42
+    NZ_2050: 0.68
+    DF_2050: 0.011
+
+  # parameters of H2 production, transport and storage
+  hydrogen:
+    network: true
+    H2_retrofit_capacity_per_CH4: 0.6
+    network_limit: 2000 #GWkm
+    network_routes: gas # "gas or "greenfield". If "gas"  ->  the network data are fetched from ["sector"]["gas"]["network_data"]. If "greenfield"  -> the network follows the topology of electrical transmission lines
+    gas_network_repurposing: true # If true -> ["sector"]["gas"]["network"] is automatically false
+    underground_storage: false
+    hydrogen_colors: false
+    set_color_shares: false
+    blue_share: 0.40
+    pink_share: 0.05
+
+  coal:
+    spatial_coal: true
+    shift_to_elec: true # If true, residential and services demand of coal is shifted to electricity. If false, the final energy demand of coal is disregarded
+  lignite:
+    spatial_lignite: false
+  oil:
+    spatial_oil: true
+
+  international_bunkers: false #Whether or not to count the emissions of international aviation and navigation
+
+  co2_network: true
+  co2_sequestration_potential: 200 #MtCO2/a sequestration potential for Europe
+  co2_sequestration_cost: 10 #EUR/tCO2 for sequestration of CO2
+
+  hydrogen_underground_storage: true
+  shipping_hydrogen_liquefaction: false
+  shipping_average_efficiency: 0.4 #For conversion of fuel oil to propulsion in 2011
+
+  shipping_hydrogen_share: #1.0
+    BU_2030: 0.00
+    AP_2030: 0.00
+    NZ_2030: 0.10
+    DF_2030: 0.05
+    AB_2030: 0.05
+    BU_2050: 0.00
+    AP_2050: 0.25
+    NZ_2050: 0.36
+    DF_2050: 0.12
+
+  gadm_level: 1
+  h2_cavern: true
+  marginal_cost_storage: 0
+  methanation: true
+  helmeth: true
+  dac: true
+  SMR: true
+  SMR CC: true
+  cc_fraction: 0.9
+  cc: true
+  airport_sizing_factor: 3
+
+  min_part_load_fischer_tropsch: 0.9
+
+custom_data:
+  renewables: [] # ['csp', 'rooftop-solar', 'solar']
+  elec_demand: false
+  heat_demand: false
+  industry_demand: false
+  industry_database: false
+  transport_demand: false
+  water_costs: false
+  h2_underground: false
+  add_existing: false
+  custom_sectors: false
+  gas_network: false # If "True" then a custom .csv file must be placed in "resources/custom_data/pipelines.csv" , If "False" the user can choose btw "greenfield" or Model built-in datasets. Please refer to ["sector"] below.
+  export_ports: false # If "True" then a custom .csv file must be placed in "data/custom/export_ports.csv"
+  airports: false # If "True" then a custom .csv file must be placed in "data/custom/airports.csv". Data format for aiports must be in the format of the airports.csv file in the data folder.
+
+export:
+  endogenous: false # If true, the export demand is endogenously determined by the model
+  endogenous_price: 400 # EUR/MWh # Market price, for wich the hydrogen for endogenous exports is sold. Only considered, if ["export"]["endogenous"] is set to true.
+  store: true # [True, False] # specifies whether an export store to balance demand is implemented
+  store_capital_costs: "no_costs" # ["standard_costs", "no_costs"] # specifies the costs of the export store. "standard_costs" takes CAPEX of "hydrogen storage tank type 1 including compressor"
+  h2export: [10] # Yearly export demand in TWh. Only considered, if ["export"]["endogenous"] is set to false
+  export_profile: "ship" # use "ship" or "constant". Only considered, if ["export"]["endogenous"] is set to false
+  ship:
+    ship_capacity: 0.4 # TWh # 0.05 TWh for new ones, 0.003 TWh for Susio Frontier, 0.4 TWh according to Hampp2021: "Corresponds to 11360 t H2 (l) with LHV of 33.3333 Mwh/t_H2. Cihlar et al 2020 based on IEA 2019, Table 3-B"
+    travel_time: 288 # hours # From Agadir to Rotterdam and back (12*24)
+    fill_time: 24 # hours, for 48h see Hampp2021
+    unload_time: 24 # hours for 48h see Hampp2021
+
+existing_capacities:
+  grouping_years_power: [1960, 1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025, 2030]
+  grouping_years_heat: [1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2019] # these should not extend 2020
+  threshold_capacity: 10
+  default_heating_lifetime: 20
+  conventional_carriers:
+  - lignite
+  - coal
+  - oil
+  - uranium
