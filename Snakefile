@@ -901,7 +901,7 @@ if config["monte_carlo"]["options"].get("add_to_snakefile", False) == True:
         resources:
             mem_mb=memory,
         shadow:
-            "shallow"
+            "copy-minimal" if os.name == "nt" else "shallow"
         script:
             "scripts/solve_network.py"
 
@@ -1626,7 +1626,7 @@ if config["foresight"] == "overnight":
             RESDIR
             + "postnetworks/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_{sopts}_{planning_horizons}_{discountrate}_{demand}_{h2export}export.nc",
         shadow:
-            "shallow"
+            "copy-minimal" if os.name == "nt" else "shallow"
         log:
             solver=RESDIR
             + "logs/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_{sopts}_{planning_horizons}_{discountrate}_{demand}_{h2export}export_solver.log",
@@ -2092,7 +2092,7 @@ if config["foresight"] == "myopic":
             # config=RESDIR
             # + "configs/config.elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_{sopts}_{planning_horizons}_{discountrate}_{demand}_{h2export}export.yaml",
         shadow:
-            "shallow"
+            "copy-minimal" if os.name == "nt" else "shallow"
         log:
             solver=RESDIR
             + "logs/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_{sopts}_{planning_horizons}_{discountrate}_{demand}_{h2export}export_solver.log",

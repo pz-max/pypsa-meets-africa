@@ -25,6 +25,8 @@ This part of documentation collects descriptive release notes to capture the mai
 
 * Fix readthedocs by explicitly specifying the location of the Sphinx config `PR #1292 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1292>`__
 
+* Fix the need for administrative rights on Windows by changing all shadow directory settings for Windows in the Snakefile `PR #1295 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1295>`__
+
 PyPSA-Earth 0.6.0
 =================
 
