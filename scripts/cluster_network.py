@@ -134,6 +134,7 @@ from _helpers import (
     configure_logging,
     create_logger,
     get_aggregation_strategies,
+    update_config_dictionary,
     update_p_nom_max,
 )
 from add_electricity import load_costs
@@ -575,9 +576,10 @@ def clustering_for_n_clusters(
     extended_link_costs=0,
     focus_weights=None,
 ):
-    bus_strategies, generator_strategies = get_aggregation_strategies(
-        aggregation_strategies
-    )
+    line_strategies = aggregation_strategies.get("lines", dict())
+    bus_strategies = aggregation_strategies.get("buses", dict())
+    generator_strategies = aggregation_strategies.get("generators", dict())
+    one_port_strategies = aggregation_strategies.get("one_ports", dict())
 
     if not isinstance(custom_busmap, pd.Series):
         if alternative_clustering:
@@ -603,12 +605,14 @@ def clustering_for_n_clusters(
     clustering = get_clustering_from_busmap(
         n,
         busmap,
-        bus_strategies=bus_strategies,
         aggregate_generators_weighted=True,
         aggregate_generators_carriers=aggregate_carriers,
         aggregate_one_ports=["Load", "StorageUnit"],
         line_length_factor=line_length_factor,
+        line_strategies=line_strategies,
+        bus_strategies=bus_strategies,
         generator_strategies=generator_strategies,
+        one_port_strategies=one_port_strategies,
         scale_link_capital_costs=False,
     )
 
@@ -628,14 +632,6 @@ def clustering_for_n_clusters(
         clustering.network.lines["underwater_fraction"] = 0
 
     return clustering
-
-
-def save_to_geojson(s, fn):
-    if os.path.exists(fn):
-        os.unlink(fn)
-    df = s.reset_index()
-    schema = {**gpd.io.file.infer_schema(df), "geometry": "Unknown"}
-    df.to_file(fn, driver="GeoJSON", schema=schema)
 
 
 def cluster_regions(busmaps, inputs, output):
@@ -703,9 +699,7 @@ if __name__ == "__main__":
         # Fast-path if no clustering is necessary
         busmap = n.buses.index.to_series()
         linemap = n.lines.index.to_series()
-        clustering = pypsa.clustering.spatial.Clustering(
-            n, busmap, linemap, linemap, pd.Series(dtype="O")
-        )
+        clustering = pypsa.clustering.spatial.Clustering(n, busmap, linemap)
     elif len(n.buses) < n_clusters:
         logger.error(
             f"Desired number of clusters ({n_clusters}) higher than the number of buses ({len(n.buses)})"
@@ -727,14 +721,27 @@ if __name__ == "__main__":
             ).all() or x.isnull().all(), "The `potential` configuration option must agree for all renewable carriers, for now!"
             return v
 
-        aggregation_strategies = snakemake.params.cluster_options.get(
-            "aggregation_strategies", {}
+        aggregation_strategies = snakemake.params.aggregation_strategies
+
+        # Aggregation strategies must be set for all columns
+        update_config_dictionary(
+            config_dict=aggregation_strategies,
+            parameter_key_to_fill="lines",
+            dict_to_use={"v_nom": "first", "geometry": "first", "bounds": "first"},
         )
-        # translate str entries of aggregation_strategies to pd.Series functions:
-        aggregation_strategies = {
-            p: {k: getattr(pd.Series, v) for k, v in aggregation_strategies[p].items()}
-            for p in aggregation_strategies.keys()
-        }
+        update_config_dictionary(
+            config_dict=aggregation_strategies,
+            parameter_key_to_fill="buses",
+            dict_to_use={
+                "v_nom": "first",
+                "lat": "mean",
+                "lon": "mean",
+                "tag_substation": "first",
+                "tag_area": "first",
+                "country": "first",
+            },
+        )
+
         custom_busmap = False  # snakemake.params.custom_busmap custom busmap is depreciated https://github.com/pypsa-meets-earth/pypsa-earth/pull/694
         if custom_busmap:
             busmap = pd.read_csv(

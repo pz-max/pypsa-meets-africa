@@ -22,6 +22,7 @@ from _helpers import (
     BASE_DIR,
     configure_logging,
     create_logger,
+    save_to_geojson,
     three_2_two_digits_country,
     two_2_three_digits_country,
     two_digits_2_name_country,
@@ -303,23 +304,6 @@ def country_cover(country_shapes, eez_shapes=None, out_logging=False, distance=0
     africa_shape = make_valid(unary_union(shapes_list))
 
     return africa_shape
-
-
-def save_to_geojson(df, fn):
-    if os.path.exists(fn):
-        os.unlink(fn)  # remove file if it exists
-    if not isinstance(df, gpd.GeoDataFrame):
-        df = gpd.GeoDataFrame(dict(geometry=df))
-
-    # save file if the GeoDataFrame is non-empty
-    if df.shape[0] > 0:
-        df = df.reset_index()
-        schema = {**gpd.io.file.infer_schema(df), "geometry": "Unknown"}
-        df.to_file(fn, driver="GeoJSON", schema=schema)
-    else:
-        # create empty file to avoid issues with snakemake
-        with open(fn, "w") as fp:
-            pass
 
 
 def load_EEZ(countries_codes, geo_crs, EEZ_gpkg="./data/eez/eez_v11.gpkg"):

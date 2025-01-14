@@ -552,6 +552,7 @@ rule add_electricity:
 
 rule simplify_network:
     params:
+        aggregation_strategies=config["cluster_options"]["aggregation_strategies"],
         renewable=config["renewable"],
         geo_crs=config["crs"]["geo_crs"],
         cluster_options=config["cluster_options"],
@@ -594,6 +595,7 @@ if config["augmented_line_connection"].get("add_to_snakefile", False) == True:
 
     rule cluster_network:
         params:
+            aggregation_strategies=config["cluster_options"]["aggregation_strategies"],
             build_shape_options=config["build_shape_options"],
             electricity=config["electricity"],
             costs=config["costs"],
@@ -679,6 +681,7 @@ if config["augmented_line_connection"].get("add_to_snakefile", False) == False:
 
     rule cluster_network:
         params:
+            aggregation_strategies=config["cluster_options"]["aggregation_strategies"],
             build_shape_options=config["build_shape_options"],
             electricity=config["electricity"],
             costs=config["costs"],

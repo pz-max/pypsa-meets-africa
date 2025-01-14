@@ -26,6 +26,27 @@ from tqdm import tqdm
 logger = create_logger(__name__)
 
 
+# Keep only a predefined set of columns, as otherwise conflicts are possible
+# e.g. the columns which names starts with "bus" are mixed up with
+# the third-bus specification when executing additional_linkports()
+LINES_COLUMNS = [
+    "line_id",
+    "circuits",
+    "tag_type",
+    "voltage",
+    "bus0",
+    "bus1",
+    "length",
+    "underground",
+    "under_construction",
+    "tag_frequency",
+    "dc",
+    "country",
+    "geometry",
+    "bounds",
+]
+
+
 def line_endings_to_bus_conversion(lines):
     # Assign to every line a start and end point
 
@@ -554,21 +575,17 @@ def fix_overpassing_lines(lines, buses, distance_crs, tol=1):
     buffer_df = df_p.buffer(tol).to_frame()
 
     # Spatial join to find lines intersecting point buffers
-    joined = gpd.sjoin(df_l, buffer_df, how="inner", op="intersects")
+    joined = gpd.sjoin(df_l, buffer_df, how="inner", predicate="intersects")
 
     # group lines by their index
     group_lines = joined.groupby(level=0)
 
     # iterate over the groups, TODO: change to apply
     for i, group in group_lines:
-        line_id = df_l.loc[i, line_id_str]  # pick the line id that represents the group
         line_geom = df_l.loc[i, "geometry"]
 
-        # number of points that intersect with the line
-        num_points = len(group)
-
         # get the indices of the points that intersect with the line
-        points_indexes = group["index_right"].tolist()
+        points_indexes = group[buffer_df.index.name].tolist()
 
         # get the geometries of the points that intersect with the line
         all_points = df_p.loc[points_indexes, "geometry"]
@@ -720,6 +737,7 @@ def built_network(
     countries_config,
     geo_crs,
     distance_crs,
+    lines_cols_standard,
     force_ac=False,
 ):
     logger.info("Stage 1/5: Read input data")
@@ -784,6 +802,8 @@ def built_network(
     if not os.path.exists(outputs["lines"]):
         os.makedirs(os.path.dirname(outputs["lines"]), exist_ok=True)
 
+    lines = lines[lines_cols_standard]
+
     to_csv_nafix(lines, outputs["lines"])  # Generate CSV
     to_csv_nafix(converters, outputs["converters"])  # Generate CSV
     to_csv_nafix(transformers, outputs["transformers"])  # Generate CSV
@@ -819,5 +839,6 @@ if __name__ == "__main__":
         countries,
         geo_crs,
         distance_crs,
+        lines_cols_standard=LINES_COLUMNS,
         force_ac=force_ac,
     )

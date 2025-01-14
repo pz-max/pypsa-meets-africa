@@ -17,6 +17,10 @@ This part of documentation collects descriptive release notes to capture the mai
 
 * In alternative clustering, generate hydro inflows by shape and avoid hydro inflows duplication for plants installed in the same node `PR #1120 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1120>`
 
+* Support of Linopy for Power and Sector-Coupled Modelling and latest PyPSA version `PR #1172 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1172>`__
+
+* Update workflow to geopandas >= 1.0 `PR #1276 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1276>`__
+
 **Minor Changes and bug-fixing**
 
 * Prevent computation of powerplantmatching if replace option is selected for custom_powerplants `PR #1281 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1281>`__
@@ -149,6 +153,7 @@ PyPSA-Earth 0.4.0
 * Add an option to merge isolated networks into respective backbone networks by countries. `PR #903 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/903>`__
 
 * Add an option to use csv format for custom demand imports. `PR #995 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/995>`__
+
 
 **Minor Changes and bug-fixing**
 

@@ -141,7 +141,7 @@ def get_gadm_shape(
     # when duplicates, keep only the first entry
     join_geos = join_geos[~join_geos.index.duplicated()]
 
-    gadm_sel = gadm_shapes.loc[join_geos["index_right"].values]
+    gadm_sel = gadm_shapes.loc[join_geos[gadm_shapes.index.name].values]
 
     return gadm_sel.geometry.values, gadm_sel.index.values
 

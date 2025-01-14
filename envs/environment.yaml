@@ -12,7 +12,8 @@ dependencies:
 - pip
 - mamba   # esp for windows build
 
-- pypsa>=0.24, <0.25
+- pypsa>=0.25
+# - atlite>=0.2.4  # until https://github.com/PyPSA/atlite/issues/244 is not merged
 - dask
 # currently the packages are being installed with pip
 # need to move back to conda once the issues will be resolved
@@ -28,13 +29,14 @@ dependencies:
 - memory_profiler
 - ruamel.yaml<=0.17.26
 - pytables
+- pyscipopt # added to compy with the quadratic objective requirement of the clustering script
 - lxml
 - numpy
 # starting from 1.3.5 numpoly requires numpy>2.0 which leads to issues
 - numpoly<=1.3.4
 - pandas
-- geopandas>=0.11.0, <=0.14.3
-- fiona!=1.8.22, <1.10.0
+- geopandas>=1
+- fiona>=1.10
 - xarray>=2023.11.0, <2023.12.0
 - netcdf4
 - networkx
@@ -49,6 +51,7 @@ dependencies:
 - pyogrio
 - numba
 - py7zr
+- tsam>=1.1.0
 
   # Keep in conda environment when calling ipython
 - ipython
@@ -80,11 +83,9 @@ dependencies:
 
 # Default solver for tests (required for CI)
 - glpk
-- ipopt
 - gurobi
 
 - pip:
   - git+https://github.com/davide-f/google-drive-downloader@master  # google drive with fix for virus scan
-  - tsam>=1.1.0
   - chaospy  # lastest version only available on pip
   - fake_useragent
