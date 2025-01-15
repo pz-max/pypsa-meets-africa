@@ -154,6 +154,7 @@ PyPSA-Earth 0.4.0
 
 * Add an option to use csv format for custom demand imports. `PR #995 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/995>`__
 
+
 **Minor Changes and bug-fixing**
 
 * Minor bug-fixing to run the cluster wildcard min `PR #1019 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1019>`__

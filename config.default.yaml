@@ -98,6 +98,7 @@ cluster_options:
       p_nom_max: sum
       p_nom_min: sum
       p_min_pu: mean
+      p_max_pu: weighted_average
       marginal_cost: mean
       committable: any
       ramp_limit_up: max

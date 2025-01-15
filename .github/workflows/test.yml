@@ -31,8 +31,8 @@ jobs:
           env_file: envs/linux-pinned.yaml
         - os: macos
           env_file: envs/macos-pinned.yaml
-        # - os: windows
-        #   env_file: envs/windows-pinned.yaml
+        - os: windows
+          env_file: envs/windows-pinned.yaml
 
     defaults:
       run:

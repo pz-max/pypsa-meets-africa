@@ -523,20 +523,6 @@ def base_network(
             result_type="reduce",
         )
         n.import_components_from_dataframe(lines_ac, "Line")
-        # The columns which names starts with "bus" are mixed up with the third-bus specification
-        # when executing additional_linkports()
-        lines_dc.drop(
-            labels=[
-                "bus0_lon",
-                "bus0_lat",
-                "bus1_lon",
-                "bus1_lat",
-                "bus_0_coors",
-                "bus_1_coors",
-            ],
-            axis=1,
-            inplace=True,
-        )
         n.import_components_from_dataframe(lines_dc, "Link")
 
     n.import_components_from_dataframe(transformers, "Transformer")
