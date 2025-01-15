@@ -78,39 +78,19 @@ The `website <https://pypsa-meets-earth.github.io/>`_ provides more context of t
 Get Involved
 ==============
 
-The PyPSA meets Earth team is currently running four types of meetings:
-
-
-- `**Discord NEW! (Open)** <https://discord.gg/AnuJBk23FU>`_
-
-  - Chat with the community, team up on features, exchange with developers, code in voice channels
-
-- **General code meeting (Open)**
-
-  - every forth Thursday each month 16-17:00 (UK time) `download .ics file <https://drive.google.com/file/d/1naH4WwW9drkOkOJ3PLO4fyWdkZQi5-_w/view?usp=share_link>`_
-  - updates on overall project and code blocks
-  - meeting hosted on `Discord <https://discord.gg/AnuJBk23FU>`_; join us, we are waiting for you!
-  - `open agenda <https://docs.google.com/document/d/1r6wm2RBe0DWFngmItpFfSFHA-CnUmVcVTkIKmthdW3g/edit?usp=sharing>`_. See what we will discuss. Invited members have edit rights.
-
-- **Specific code meeting (by invitation)**
-
-  - meeting hosted on Discord
-  - join updates, demos, Q&A's, discussions and the coordination of each work package
-
-    1. Demand creation and prediction meeting, on demand basis
-    2. AI asset detection meeting, on demand basis
-    3. Sector coupling meeting, every Thursday 09:00 (UK time), `download .ics file <https://drive.google.com/file/d/1PDdmjsKhzyGRo0_YrP4wPQkn2XTNh6jA/view?usp=share_link>`__
-    4. PyPSA-Earth meeting, every Thursday 16:00 (UK time), `download .ics file <https://drive.google.com/file/d/1gaLmyV4qGPXsogkeRcAPWjC0ESebUxU-/view?usp=share_link>`__
-
-- **Outreach meeting (by invitation)**
-
-  - every second week
-  - planning, discussing events, workshops, communication, community activities
-
-- **Buddy talk (Open)**
-
-  - book a 30min meeting with Max to discuss anything you like
-  - booking link: `calendly.com/pypsa-meets-earth <https://calendly.com/max-parzen/pypsa-meets-earth-exchange-30min>`_
+There are multiple ways to get involved and learn more about our work:
+    1. **Join our forum** and communication platform on `PyPSA-meets-Earth <https://discord.gg/AnuJBk23FU>`__ Discord Server
+    2. **Chat on Discord with us** in the following meetings:
+        - General initiative meeting for project news and `high-level code updates <https://docs.google.com/document/d/1r6wm2RBe0DWFngmItpFfSFHA-CnUmVcVTkIKmthdW3g/edit?usp=sharing>`__. Held every `fourth Thursday 16-17:00 (UK time) <https://drive.google.com/file/d/1naH4WwW9drkOkOJ3PLO4fyWdkZQi5-_w/view?usp=share_link>`__ and is a perfect place to meet the community and get a high-level update on PyPSA ecosystem relevant for PyPSA-Earth developments.
+        - Weekly developers meetings
+            - Eastern-Hemisphere friendly *Morning meeting* every `Thursday at 09:00 (UK time) <https://drive.google.com/file/d/1PDdmjsKhzyGRo0_YrP4wPQkn2XTNh6jA/view?usp=share_link>`__.
+            - Western-Hemisphere friendly *Evening meeting* every `Thursday 16:00 (UK time) <https://drive.google.com/file/d/1gaLmyV4qGPXsogkeRcAPWjC0ESebUxU-/view?usp=share_link>`__. Every forth Thursday is replaced by the General initiative meeting which has a more high-level perspective, but you can also join to discuss more particular questions.
+    3. **Look at public materials** at `google Drive <https://drive.google.com/drive/folders/13Z8Y9zgsh5IZaDNkkRyo1wkoMgbdUxT5?usp=sharing>`__ to share to minutes, presentations, lists and documents. Feel gree to get a look!
+    4. **Notify your interest** to on-demand meetings:
+        - Demand creation and prediction meeting
+        - AI asset detection meeting
+        - Outreach meeting for planning, discussing events, workshops, communication, community activities
+    5. Join us and **propose your stream**.
 
 =============
 Documentation
