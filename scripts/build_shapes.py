@@ -1302,6 +1302,56 @@ def gadm(
 
     return df_gadm
 
+def crop_country(gadm_shapes, subregion_config):
+    country_shapes_new = gpd.GeoDataFrame(columns=["name", "geometry"]).set_index(
+        "name"
+    )
+
+    remain_gadm_shapes = gadm_shapes.copy(deep=True)
+    country_gadm = remain_gadm_shapes["country"].unique()
+
+    for sub_region in subregion_config:
+
+        region_GADM = [
+            country + "." + str(region) + "_1"
+            for country in subregion_config[sub_region]
+            if country in country_gadm
+            for region in subregion_config[sub_region][country]
+        ]
+
+        if not region_GADM:
+            continue
+
+        sub_country_geometry = gadm_shapes.loc[region_GADM].unary_union
+        sub_country_shapes = gpd.GeoDataFrame(
+            {
+                "name": sub_region,
+                "geometry": [sub_country_geometry],
+            }
+        ).set_index("name")
+
+        country_shapes_new = pd.concat([country_shapes_new, sub_country_shapes])
+
+        remain_gadm_shapes = remain_gadm_shapes.query("index != @region_GADM")
+
+    for country in remain_gadm_shapes.country.unique():
+        country_geometry_new = remain_gadm_shapes.query(
+            "country == @country"
+        ).unary_union
+        country_shapes_country = gpd.GeoDataFrame(
+            {
+                "name": country,
+                "geometry": [country_geometry_new],
+            }
+        ).set_index("name")
+
+        country_shapes_new = pd.concat([country_shapes_new, country_shapes_country])
+
+    return gpd.GeoDataFrame(
+        country_shapes_new,
+        crs=offshore_shapes.crs,
+        geometry=country_shapes_new.geometry,
+    )
 
 if __name__ == "__main__":
     if "snakemake" not in globals():
@@ -1363,4 +1413,10 @@ if __name__ == "__main__":
         nprocesses=nprocesses,
         simplify_gadm=simplify_gadm,
     )
+
+    if snakemake.params.get("subregion").get("define_by_gadm", False):
+        subregion_config = snakemake.params.subregion["define_by_gadm"]
+        subregion_shapes = crop_country(gadm_shapes, subregion_config)
+        subregion_shapes.to_file(snakemake.output.subregion_shapes)
+
     save_to_geojson(gadm_shapes, out.gadm_shapes)

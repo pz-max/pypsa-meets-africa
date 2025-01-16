@@ -805,7 +805,7 @@ def merge_into_network(n, threshold, aggregation_strategies=dict()):
     generators_mean_origin = n.generators.p_nom.mean()
     load_mean_origin = n.loads_t.p_set.mean().mean()
 
-    network_crs = snakemake.params.geo_crs
+    network_crs = snakemake.params.crs["geo_crs"]
 
     n.determine_network_topology()
 
@@ -971,6 +971,16 @@ def merge_isolated_nodes(n, threshold, aggregation_strategies=dict()):
 
     return clustering.network, busmap
 
+def nearest_shape(n, path_shapes, distance_crs):
+    from shapely.geometry import Point
+    
+    shapes = gpd.read_file(path_shapes, crs=distance_crs).set_index("name")["geometry"]
+
+    for i in n.buses.index:
+        point = Point(n.buses.loc[i,"x"], n.buses.loc[i,"y"])
+        n.buses.loc[i,"country"] = shapes.distance(point).sort_values().index[0]
+
+    return n
 
 if __name__ == "__main__":
     if "snakemake" not in globals():
@@ -1095,7 +1105,7 @@ if __name__ == "__main__":
         distribution_cluster = snakemake.params.cluster_options["distribute_cluster"]
         focus_weights = snakemake.params.focus_weights
         gadm_layer_id = snakemake.params.build_shape_options["gadm_layer_id"]
-        geo_crs = snakemake.params.geo_crs
+        geo_crs = snakemake.params.crs["geo_crs"]
         renewable_config = snakemake.params.renewable
         solver_name = snakemake.config["solving"]["solver"]["name"]
 
@@ -1131,6 +1141,11 @@ if __name__ == "__main__":
 
     update_p_nom_max(n)
 
+    subregion_shapes = snakemake.input.subregion_shapes
+    if subregion_shapes:
+        distance_crs = snakemake.params.crs["distance_crs"]
+        n = nearest_shape(n, subregion_shapes, distance_crs)
+
     p_threshold_drop_isolated = max(
         0.0, cluster_config.get("p_threshold_drop_isolated", 0.0)
     )
@@ -1154,6 +1169,10 @@ if __name__ == "__main__":
             aggregation_strategies=aggregation_strategies,
         )
         busmaps.append(fetched_nodes_map)
+
+    if subregion_shapes:
+        country_shapes = snakemake.input.country_shapes
+        n = nearest_shape(n, country_shapes, distance_crs)
 
     n.meta = dict(snakemake.config, **dict(wildcards=dict(snakemake.wildcards)))
     n.export_to_netcdf(snakemake.output.network)
