@@ -1750,6 +1750,14 @@ rule plot_network:
         "scripts/plot_network.py"
 
 
+rule conservation_checks:
+    input:
+        network_folder="networks/" + RDIR,
+    threads: 1
+    script:
+        "scripts/conservation_checks.py"
+
+
 rule make_statistics:
     params:
         countries=config["countries"],
