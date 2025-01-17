@@ -470,11 +470,25 @@ def attach_hydro(n, costs, ppl):
 
     _add_missing_carriers_from_costs(n, costs, carriers)
 
+    if snakemake.params.alternative_clustering:
+        # bus to region mapping for hydro powerplants
+        bus_to_region_id = (
+            ppl.drop_duplicates(subset="bus").set_index("bus")["region_id"].to_dict()
+        )
+
     ppl = (
         ppl.query('carrier == "hydro"')
         .reset_index(drop=True)
         .rename(index=lambda s: str(s) + " hydro")
     )
+
+    with xr.open_dataarray(snakemake.input.profile_hydro) as inflow:
+        if snakemake.params.alternative_clustering:
+            for bus in inflow.indexes["plant"]:
+                if bus in bus_to_region_id:
+                    region_to_update = bus_to_region_id[bus]
+                    # Update all rows in the DataFrame where region_id matches
+                    ppl.loc[ppl["region_id"] == region_to_update, "bus"] = bus
 
     # Current fix, NaN technologies set to ROR
     if ppl.technology.isna().any():
@@ -488,10 +502,8 @@ def attach_hydro(n, costs, ppl):
     ror = ppl.query('technology == "Run-Of-River"')
     phs = ppl.query('technology == "Pumped Storage"')
     hydro = ppl.query('technology == "Reservoir"')
-    if snakemake.params.alternative_clustering:
-        bus_id = ppl["region_id"]
-    else:
-        bus_id = ppl["bus"]
+
+    bus_id = ppl["bus"]
 
     inflow_idx = ror.index.union(hydro.index)
     if not inflow_idx.empty:
