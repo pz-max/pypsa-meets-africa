@@ -511,6 +511,9 @@ sector:
     network: false # ALWAYS FALSE for now (NOT USED)
     network_data: GGIT # Global dataset -> 'GGIT' , European dataset -> 'IGGIELGN'
     network_data_GGIT_status: ["Construction", "Operating", "Idle", "Shelved", "Mothballed", "Proposed"]
+    gas_NGCC: false # if true, Natural Gas 2-on-1 Combined Cycle (F-Frame) plant is added
+    CC: false # enable gas carbon capture technologies
+    gas_CC_techs: ["NG 2-on-1 Combined Cycle (F-Frame) 95% CCS", "NG 2-on-1 Combined Cycle (F-Frame) 97% CCS"] # Natural Gas 2-on-1 Combined Cycle (F-Frame) plants with 95% and 97% capture rate
   hydrogen:
     network: true
     H2_retrofit_capacity_per_CH4: 0.6
@@ -525,6 +528,9 @@ sector:
   coal:
     spatial_coal: true
     shift_to_elec: true # If true, residential and services demand of coal is shifted to electricity. If false, the final energy demand of coal is disregarded
+    coal_IGCC: false # If true, coal integrated gas combined-cycle (IGCC) plants are added
+    CC: false # enable coal carbon capture technologies
+    coal_CC_techs: ["Coal-95%-CCS", "Coal-99%-CCS", "Coal-IGCC-90%-CCS"] # coal plant with 95% capture rate, coal plant with 99% capture rate, coal integrated gas combined-cycle plant with 90% capture rate
   lignite:
     spatial_lignite: false
 
