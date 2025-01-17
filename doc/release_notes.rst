@@ -143,6 +143,7 @@ PyPSA-Earth 0.4.1
 * Fixed problematic float parsing (`_parse_float`) in `clean_osm_data.py` to make sure all OSM lines are correctly accounted for `PR #1089 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1089>`__
 * Fix minor bug for advanced csp implementation `PR #1076 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1076>`__
 * Fix minor bug in `build_powerplants.py` where the gas technology assignment incorrectly introduced NaN values for all powerplant technologies. `PR #1102 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1102>`__
+* Fix unwanted termination due to existing cutout during snakemake subprocess calls `PR #1079 <https://github.com/pypsa-meets-earth/pypsa-earth/pull/1079>`__
 
 
 PyPSA-Earth 0.4.0
