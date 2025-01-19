@@ -221,10 +221,10 @@ dependencies:
 - libabseil=20240722.0
 - libaec=1.1.3
 - libarchive=3.7.7
-- libarrow=18.1.0
-- libarrow-acero=18.1.0
-- libarrow-dataset=18.1.0
-- libarrow-substrait=18.1.0
+- libarrow=19.0.0
+- libarrow-acero=19.0.0
+- libarrow-dataset=19.0.0
+- libarrow-substrait=19.0.0
 - libasprintf=0.22.5
 - libasprintf-devel=0.22.5
 - libblas=3.9.0
@@ -297,7 +297,7 @@ dependencies:
 - libogg=1.3.5
 - libopenblas=0.3.28
 - libopus=1.3.1
-- libparquet=18.1.0
+- libparquet=19.0.0
 - libpciaccess=0.18
 - libpng=1.6.45
 - libpq=17.2
@@ -311,7 +311,7 @@ dependencies:
 - libsolv=0.7.30
 - libspatialite=5.1.0
 - libspral=2024.05.08
-- libsqlite=3.47.2
+- libsqlite=3.48.0
 - libssh2=1.11.1
 - libstdcxx=14.2.0
 - libstdcxx-ng=14.2.0
@@ -425,8 +425,8 @@ dependencies:
 - pure_eval=0.2.3
 - py-cpuinfo=9.0.0
 - py7zr=0.22.0
-- pyarrow=18.1.0
-- pyarrow-core=18.1.0
+- pyarrow=19.0.0
+- pyarrow-core=19.0.0
 - pybcj=1.0.3
 - pycountry=24.6.1
 - pycparser=2.22
@@ -463,7 +463,7 @@ dependencies:
 - rasterio=1.3.11
 - re2=2024.07.02
 - readline=8.2
-- referencing=0.35.1
+- referencing=0.36.1
 - reproc=14.2.5.post0
 - reproc-cpp=14.2.5.post0
 - requests=2.32.3
@@ -471,11 +471,11 @@ dependencies:
 - reverse-geocode=1.4.1
 - rfc3339-validator=0.1.4
 - rfc3986-validator=0.1.1
-- rioxarray=0.17.0
+- rioxarray=0.18.1
 - rpds-py=0.22.3
 - ruamel.yaml=0.17.26
 - ruamel.yaml.clib=0.2.8
-- s2n=1.5.10
+- s2n=1.5.11
 - scikit-learn=1.6.1
 - scip=9.2.0
 - scipy=1.15.1
@@ -496,7 +496,7 @@ dependencies:
 - sortedcontainers=2.4.0
 - soupsieve=2.5
 - spdlog=1.15.0
-- sqlite=3.47.2
+- sqlite=3.48.0
 - stack_data=0.6.3
 - statsmodels=0.14.4
 - stopit=1.1.2
@@ -522,8 +522,8 @@ dependencies:
 - typing-extensions=4.12.2
 - typing_extensions=4.12.2
 - typing_utils=0.1.0
-- tzcode=2024b
-- tzdata=2024b
+- tzcode=2025a
+- tzdata=2025a
 - uc-micro-py=1.0.3
 - ukkonen=1.0.1
 - unicodedata2=16.0.0
@@ -532,7 +532,7 @@ dependencies:
 - uriparser=0.9.8
 - urllib3=2.3.0
 - validators=0.34.0
-- virtualenv=20.29.0
+- virtualenv=20.29.1
 - wcwidth=0.2.13
 - webcolors=24.11.1
 - webencodings=0.5.1
@@ -558,7 +558,7 @@ dependencies:
 - xorg-libxfixes=6.0.1
 - xorg-libxrender=0.9.12
 - xorg-libxxf86vm=1.1.6
-- xyzservices=2024.9.0
+- xyzservices=2025.1.0
 - xz=5.6.3
 - xz-gpl-tools=5.6.3
 - xz-tools=5.6.3
